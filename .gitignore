@@ -1,1 +1,11 @@
 /cmake-build-debug/
+/cmake-build-release/
+/build/
+
+# 排除其他生成文件
+*.o
+*.a
+*.so
+*.exe
+*.dll
+*.out

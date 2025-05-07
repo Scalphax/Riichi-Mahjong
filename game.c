@@ -23,14 +23,13 @@ enum Word {
     Zhong
 };
 
-struct Tile {
+typedef struct {
     int suit;
     int value;
     bool is_red;
-};
-typedef struct Tile TILE;
+} Tile;
 
-int init(TILE wall[136]) {
+int init(Tile wall[136]) {
     int i = 0;
     // 初始化数牌
     for (enum Suit suit = Wan ; suit <= Bamboo ; suit++) {
@@ -59,26 +58,37 @@ int init(TILE wall[136]) {
     return 0;
 }
 
-void shuffle(TILE wall[136]) {
+void shuffle(Tile wall[136]) {
     // 随机牌山
     srand(time(NULL));
     int k = 0;
     for (int j = 0 ; j < 136 ; j++) {
         k = rand() % (j + 1);
-        const TILE temp = wall[k];
+        const Tile temp = wall[k];
         wall[k] = wall[j];
         wall[j] = temp;
     }
 }
 
-void draw(TILE* wall, int* wall_now,TILE* tiles[],int* tiles_amount) {
+void draw(Tile* wall, int* wall_now,Tile* tiles[],int* tiles_amount) {
     tiles[*tiles_amount] = &wall[*wall_now];
     (*wall_now)++;
     (*tiles_amount)++;
 }
+// 大小比较
+int compare(const void* a, const void* b) {
+    const Tile* s1 = *(const Tile**)a;
+    const Tile* s2 = *(const Tile**)b;
+    if (s1 -> suit != s2 -> suit) {
+        return s1 -> suit - s2 -> suit;  // 按 Suit 升序
+    } else {
+        // 若 Suit 相同，则比较 Value
+        return s1 -> value - s2 -> value;  // 按 b 升序
+    }
+}
 
 int in_game(void) {
-    TILE wall[136];
+    Tile wall[136];
     // 生成牌并洗牌
     init(wall);
     shuffle(wall);
@@ -90,7 +100,7 @@ int in_game(void) {
         enum Word wind;
         int tiles_amount;
         int score;
-        TILE* tiles[18];
+        Tile* tiles[18];
     }player1 = {0,-1,Dong,0,25000},
     player2 = {0,-1,Nan,0,25000},
     player3 = {0,-1,Xi,0,25000},
@@ -98,7 +108,7 @@ int in_game(void) {
 
     struct Player* players[] = {&player1,&player2,&player3,&player4};
     //取宝牌指示牌
-    TILE* dora[10];
+    Tile* dora[10];
     for (int i = 0; i < 10; i++) {
         dora[i] = &wall[126 + i];
     }
@@ -109,17 +119,20 @@ int in_game(void) {
         for (int j = 0; j < 13; j++) {
             draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
         }
+        // 排序
+        qsort(players[i]->tiles, 13, sizeof(Tile*), compare);
     }
+
     // for (int i = 0 ; i < 10 ; i++) {
     //     printf("{%d,%d,%d}",dora[i]->suit,dora[i]->value,dora[i]->is_red);
     // }
-    // printf("\n");
-    // for (int i = 0 ; i < 4 ; i++) {
-    //     for (int j = 0 ; j < 13 ; j++) {
-    //         printf("{%d,%d,%d}",players[i]->tiles[j]->suit,players[i]->tiles[j]->value,players[i]->tiles[j]->is_red);
-    //     }
-    //     printf("\n");
-    // }
+    printf("\n");
+    for (int i = 0 ; i < 4 ; i++) {
+        for (int j = 0 ; j < 13 ; j++) {
+            printf("{%d,%d,%d}",players[i]->tiles[j]->suit,players[i]->tiles[j]->value,players[i]->tiles[j]->is_red);
+        }
+        printf("\n");
+    }
 
     // 开始游戏
     return 0;
