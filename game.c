@@ -29,6 +29,17 @@ typedef struct {
     bool is_red;
 } Tile;
 
+typedef struct {
+    char name[100];
+    bool is_ting;
+    int fulu_start;
+    enum Word wind;
+    int tiles_amount;
+    int score;
+    int discard_num;
+    Tile* tiles[18];
+    Tile* discarded[40];
+} Player;
 int init(Tile wall[136]) {
     int i = 0;
     // 初始化数牌
@@ -51,11 +62,27 @@ int init(Tile wall[136]) {
             i++;
         }
     }
+
     // 标记红宝牌
     wall[16].is_red = true;
     wall[52].is_red = true;
     wall[88].is_red = true;
     return 0;
+}
+
+// todo 吃碰杠荣检测
+int check_action(Player* player,Tile* discard) {
+    if (0) {
+        return 1;
+    }
+    {
+        return 0;
+    }
+}
+
+// 牌面打印
+void print_tile(const Tile* tile) {
+    printf("{%d,%d,%d}",tile->suit,tile->value,tile->is_red);
 }
 
 void shuffle(Tile wall[136]) {
@@ -81,10 +108,54 @@ int compare(const void* a, const void* b) {
     const Tile* s2 = *(const Tile**)b;
     if (s1 -> suit != s2 -> suit) {
         return s1 -> suit - s2 -> suit;  // 按 Suit 升序
-    } else {
-        // 若 Suit 相同，则比较 Value
-        return s1 -> value - s2 -> value;  // 按 b 升序
     }
+    // 若 Suit 相同，则比较 Value
+    return s1 -> value - s2 -> value;  // 按 Value 升序
+}
+
+// 出牌阶段
+void in_turn(Player* player) {
+    printf("\n");
+    for (int i = 0 ; i < player->tiles_amount-1 ; i++) {
+        printf("(%d)",i+1);
+        print_tile(player->tiles[i]);
+    }
+    printf("(%d)",player->tiles_amount);
+    print_tile(player->tiles[player->tiles_amount-1]);
+    printf("\n请键入要出的牌的序号,回车发送:");
+    long select = player->tiles_amount;
+    char input[4];
+    char* endptr;
+    while (1) {
+        fgets(input,sizeof(input),stdin);
+        if (input[0] == '\n') {
+            break;
+        }
+        long num = strtol(input, &endptr, 10);
+        if (num > 0 && num <= player->tiles_amount) {
+            if (endptr == input || *endptr != '\n') {
+                printf("输入无效！\n");
+            }
+            else {
+                select = num;
+                break;
+            }
+        }
+        else {
+            printf("输入超出范围！\n");
+            int ch;
+            while((ch = getchar()) != '\n' && ch != EOF);
+        }
+    }
+    // printf("%ld\n",select);
+    // print_tile(player->tiles[select-1]);
+    //放入弃牌堆
+    if (check_action(player, player->tiles[select-1]) == 0) {
+        player->discarded[player->discard_num] = player->tiles[select-1];
+        player->discard_num++;
+    }
+    // todo 理牌
+
 }
 
 int in_game(void) {
@@ -94,20 +165,13 @@ int in_game(void) {
     shuffle(wall);
 
     // 初始化玩家
-    struct Player {
-        bool is_ting;
-        int fulu_start;
-        enum Word wind;
-        int tiles_amount;
-        int score;
-        Tile* tiles[18];
-    }player1 = {0,-1,Dong,0,25000},
-    player2 = {0,-1,Nan,0,25000},
-    player3 = {0,-1,Xi,0,25000},
-    player4 = {0,-1,Bei,0,25000};
+    Player player1 = {"Player1",0,-1,Dong,0,25000,0};
+    Player player2 = {"Player2",0,-1,Nan,0,25000,0};
+    Player player3 = {"Player3",0,-1,Xi,0,25000,0};
+    Player player4 = {"Player4",0,-1,Bei,0,25000,0};
 
-    struct Player* players[] = {&player1,&player2,&player3,&player4};
-    //取宝牌指示牌
+    Player* players[] = {&player1,&player2,&player3,&player4};
+    // 取宝牌指示牌
     Tile* dora[10];
     for (int i = 0; i < 10; i++) {
         dora[i] = &wall[126 + i];
@@ -122,18 +186,27 @@ int in_game(void) {
         // 排序
         qsort(players[i]->tiles, 13, sizeof(Tile*), compare);
     }
-
     // for (int i = 0 ; i < 10 ; i++) {
     //     printf("{%d,%d,%d}",dora[i]->suit,dora[i]->value,dora[i]->is_red);
     // }
-    printf("\n");
+    //printf("\n");
     for (int i = 0 ; i < 4 ; i++) {
         for (int j = 0 ; j < 13 ; j++) {
-            printf("{%d,%d,%d}",players[i]->tiles[j]->suit,players[i]->tiles[j]->value,players[i]->tiles[j]->is_red);
+            print_tile(players[i]->tiles[j]);
         }
         printf("\n");
     }
 
-    // 开始游戏
+    // 记录巡数
+    int round = 1;
+    // 从东家开始发牌
+    for (int i = 0 ; i < 4 ; i++) {
+        if (wall_now < 136) {
+            draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
+            in_turn(players[i]);
+        }
+    }
+
+
     return 0;
 }
