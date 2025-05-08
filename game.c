@@ -2,44 +2,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "common.h"
+#include "checks.h"
+
 //
 // Created by Scalphax on 25-5-7.
 //
 
-enum Suit {
-    Wan,
-    Dots,
-    Bamboo,
-    Word
-};
-
-enum Word {
-    Dong,
-    Nan,
-    Xi,
-    Bei,
-    Bai,
-    Fa,
-    Zhong
-};
-
-typedef struct {
-    int suit;
-    int value;
-    bool is_red;
-} Tile;
-
-typedef struct {
-    char name[100];
-    bool is_ting;
-    int fulu_start;
-    enum Word wind;
-    int tiles_amount;
-    int score;
-    int discard_num;
-    Tile* tiles[18];
-    Tile* discarded[40];
-} Player;
 int init(Tile wall[136]) {
     int i = 0;
     // 初始化数牌
@@ -70,23 +39,13 @@ int init(Tile wall[136]) {
     return 0;
 }
 
-// todo 吃碰杠荣检测
-int check_action(Player* player,Tile* discard) {
-    if (0) {
-        return 1;
-    }
-    {
-        return 0;
-    }
-}
-
 // 牌面打印
 void print_tile(const Tile* tile) {
     printf("{%d,%d,%d}",tile->suit,tile->value,tile->is_red);
 }
 
+// 随机牌山
 void shuffle(Tile wall[136]) {
-    // 随机牌山
     srand(time(NULL));
     int k = 0;
     for (int j = 0 ; j < 136 ; j++) {
@@ -97,11 +56,13 @@ void shuffle(Tile wall[136]) {
     }
 }
 
+// 抓牌
 void draw(Tile* wall, int* wall_now,Tile* tiles[],int* tiles_amount) {
     tiles[*tiles_amount] = &wall[*wall_now];
     (*wall_now)++;
     (*tiles_amount)++;
 }
+
 // 大小比较
 int compare(const void* a, const void* b) {
     const Tile* s1 = *(const Tile**)a;
@@ -151,8 +112,8 @@ void in_turn(Player* player) {
     // print_tile(player->tiles[select-1]);
     //放入弃牌堆
     if (check_action(player, player->tiles[select-1]) == 0) {
-        player->discarded[player->discard_num] = player->tiles[select-1];
-        player->discard_num++;
+        player->discarded[player->discard_amount] = player->tiles[select-1];
+        player->discard_amount++;
     }
     // todo 理牌
 
@@ -165,10 +126,10 @@ int in_game(void) {
     shuffle(wall);
 
     // 初始化玩家
-    Player player1 = {"Player1",0,-1,Dong,0,25000,0};
-    Player player2 = {"Player2",0,-1,Nan,0,25000,0};
-    Player player3 = {"Player3",0,-1,Xi,0,25000,0};
-    Player player4 = {"Player4",0,-1,Bei,0,25000,0};
+    Player player1 = {"Player1",0,-1,Dong,0,25000,0,0};
+    Player player2 = {"Player2",0,-1,Nan,0,25000,0,0};
+    Player player3 = {"Player3",0,-1,Xi,0,25000,0,0};
+    Player player4 = {"Player4",0,-1,Bei,0,25000,0,0};
 
     Player* players[] = {&player1,&player2,&player3,&player4};
     // 取宝牌指示牌
@@ -200,13 +161,14 @@ int in_game(void) {
     // 记录巡数
     int round = 1;
     // 从东家开始发牌
-    for (int i = 0 ; i < 4 ; i++) {
-        if (wall_now < 136) {
-            draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
-            in_turn(players[i]);
+    while (1) {
+        for (int i = 0 ; i < 4 ; i++) {
+            if (wall_now < 136) {
+                draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
+                in_turn(players[i]);
+            }
         }
     }
-
 
     return 0;
 }
