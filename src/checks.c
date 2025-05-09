@@ -1,13 +1,14 @@
 //
 // Created by Scalphax on 25-5-8.
 //
-#include "checks.h"
+#include "../include/checks.h"
+#include "../include/game.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "game.h"
-
+// todo 吃重复计算(如235 去重即可)以及莫名其妙的非等牌
+// todo 碰杠不生效
 // int check_action(Player* player,Tile* discard) {
 //     if (0) {
 //         return 1;
