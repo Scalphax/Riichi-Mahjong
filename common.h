@@ -4,17 +4,14 @@
 
 #ifndef COMMON_H
 #define COMMON_H
-
-#endif //COMMON_H
-
+#include <stdbool.h>
 enum Suit {
     Wan,
     Dots,
     Bamboo,
-    Word
+    Words
 };
-
-enum Word {
+enum WordType {
     Dong,
     Nan,
     Xi,
@@ -46,7 +43,7 @@ typedef struct {
     char name[100];
     bool is_ting;
     int fulu_start;
-    enum Word wind;
+    enum WordType wind;
     int tiles_amount;
     int score;
     int discard_amount;
@@ -55,3 +52,4 @@ typedef struct {
     Tile* discarded[40];
     WaitedTile waited_tiles[10];
 } Player;
+#endif //COMMON_H

@@ -9,4 +9,5 @@ add_executable(mah_jong main.c
         checks.h
         common.h
         common.c
+        game.h
 )

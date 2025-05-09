@@ -1,9 +1,8 @@
+#include "game.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "common.h"
-#include "checks.h"
 
 //
 // Created by Scalphax on 25-5-7.
@@ -23,9 +22,9 @@ int init(Tile wall[136]) {
         }
     }
     // 初始化字牌
-    for (enum Word word = Dong ; word <= Zhong ; word++) {
+    for (enum WordType word = Dong ; word <= Zhong ; word++) {
         for (int num = 0 ; num <= 3 ; num++) {
-            wall[i].suit = Word;
+            wall[i].suit = Words;
             wall[i].value = word;
             wall[i].is_red = false;
             i++;
@@ -111,10 +110,15 @@ void in_turn(Player* player) {
     // printf("%ld\n",select);
     // print_tile(player->tiles[select-1]);
     //放入弃牌堆
-    if (check_action(player, player->tiles[select-1]) == 0) {
-        player->discarded[player->discard_amount] = player->tiles[select-1];
-        player->discard_amount++;
+    check_waited(player);
+    for (int i = 0 ; i < player->tiles_amount-1 ; i++) {
+        print_tile(&player->waited_tiles[i].waited_tile);
     }
+    // todo 弃牌检测
+    // if (check_action(player, player->tiles[select-1]) == 0) {
+    //     player->discarded[player->discard_amount] = player->tiles[select-1];
+    //     player->discard_amount++;
+    // }
     // todo 理牌
 
 }
@@ -167,8 +171,11 @@ int in_game(void) {
                 draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
                 in_turn(players[i]);
             }
+            else {
+                goto out_of_tiles;
+            }
         }
     }
-
-    return 0;
+    out_of_tiles:
+        return 0;
 }
