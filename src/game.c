@@ -1,12 +1,11 @@
+//
+// Created by Scalphax on 25-5-7.
+//
 #include "../include/game.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-
-//
-// Created by Scalphax on 25-5-7.
-//
 
 int init(Tile wall[136]) {
     int i = 0;
@@ -180,6 +179,7 @@ int in_game(void) {
                 goto out_of_tiles;
             }
         }
+        round++;
     }
     out_of_tiles:
         return 0;

@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// todo 杠检测
 // int check_action(Player* player,Tile* discard) {
 //     if (0) {
 //         return 1;
