@@ -83,7 +83,7 @@ void in_turn(Player* player) {
     printf("(%d)",player->tiles_amount);
     print_tile(player->tiles[player->tiles_amount-1]);
     printf("\n请键入要出的牌的序号,回车发送:");
-    long select = player->tiles_amount;
+    long select = player->tiles_amount - 1;
     char input[4];
     char* endptr;
     while (1) {
@@ -97,7 +97,7 @@ void in_turn(Player* player) {
                 printf("输入无效！\n");
             }
             else {
-                select = num;
+                select = num-1;
                 break;
             }
         }
@@ -107,16 +107,24 @@ void in_turn(Player* player) {
             while((ch = getchar()) != '\n' && ch != EOF);
         }
     }
-    // printf("%ld\n",select);
-    // print_tile(player->tiles[select-1]);
-    //放入弃牌堆
+    // 放入弃牌堆
+    player->discarded[player->discard_amount] = player->tiles[select];
+    player->discard_amount++;
+    player->tiles[select] = NULL;
+    player->tiles_amount--;
+    // 拿出的牌向前移
+    for (int i = select; i < player->tiles_amount; i++) {
+        player->tiles[i] = player->tiles[i+1];
+    }
+    player->tiles[player->tiles_amount] = NULL;
+    // 排序
+    qsort(player->tiles, player->tiles_amount, sizeof(Tile*), compare);
     check_waited(player);
     // todo 弃牌检测
     // if (check_action(player, player->tiles[select-1]) == 0) {
     //     player->discarded[player->discard_amount] = player->tiles[select-1];
     //     player->discard_amount++;
     // }
-    // todo 理牌
 
 }
 
