@@ -31,16 +31,16 @@ void check_waited(Player* player) {
     for (int i = 0; i < player->tiles_amount; i++) {
         // 检测吃
         if (player->tiles[i] -> suit < 3) {
+            // 防止越界
+            if (i+2 >= player->tiles_amount) {
+                break;
+            }
             // 找到同样牌的最后一张
             if (if_equal(player->tiles[i],player->tiles[i+1],0)) {
                 continue;
             }
             // 检测相邻吃
             if (if_equal(player->tiles[i], player->tiles[i+1], 1)) {
-                // 防止越界
-                if (i+1 >= player->tiles_amount) {
-                    break;
-                }
                 if (player->tiles[i]->value < 8) {
                     player -> waited_tiles[player->waited_tiles_amount] = (WaitedTile) {
                         .waited_tile = {
