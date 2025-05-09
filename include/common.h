@@ -21,22 +21,22 @@ enum WordType {
     Zhong
 };
 
+typedef enum {
+    wait_Hu,
+    wait_Chi,
+    wait_Peng,
+    wait_Gang,
+} Wait_type;
+
 typedef struct {
     int suit;
     int value;
     bool is_red;
 } Tile;
 
-/*
-   type = 0 听牌
-        = 1 吃
-        = 2 碰
-        = 3 杠
-*/
-
 typedef struct {
     Tile waited_tile;
-    int type;
+    Wait_type type;
 } WaitedTile;
 
 typedef struct {

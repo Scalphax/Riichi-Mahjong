@@ -111,9 +111,6 @@ void in_turn(Player* player) {
     // print_tile(player->tiles[select-1]);
     //放入弃牌堆
     check_waited(player);
-    for (int i = 0 ; i < player->tiles_amount-1 ; i++) {
-        print_tile(&player->waited_tiles[i].waited_tile);
-    }
     // todo 弃牌检测
     // if (check_action(player, player->tiles[select-1]) == 0) {
     //     player->discarded[player->discard_amount] = player->tiles[select-1];
