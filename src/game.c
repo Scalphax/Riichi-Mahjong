@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 int init(Tile wall[136]) {
@@ -72,8 +73,14 @@ int compare(const void* a, const void* b) {
     return s1 -> value - s2 -> value;  // 按 Value 升序
 }
 
+int compare_by_type(const void* a, const void* b) {
+    const WaitedTile t1 = *(const WaitedTile*)a;
+    const WaitedTile t2 = *(const WaitedTile*)b;
+    return t1.type - t2.type;
+}
+
 // 出牌阶段
-void in_turn(Player* player) {
+void in_turn(Player* player, Player* players[]) {
     printf("\n");
     for (int i = 0 ; i < player->tiles_amount-1 ; i++) {
         printf("(%d)",i+1);
@@ -119,11 +126,14 @@ void in_turn(Player* player) {
     // 排序
     qsort(player->tiles, player->tiles_amount, sizeof(Tile*), compare);
     check_waited(player);
-    // todo 弃牌检测
-    // if (check_action(player, player->tiles[select-1]) == 0) {
-    //     player->discarded[player->discard_amount] = player->tiles[select-1];
-    //     player->discard_amount++;
-    // }
+    Action actions[8] = {0};
+    int const actions_amount = check_action(players, player->discarded[player->discard_amount-1], actions, player);
+    if (actions_amount > 0) {
+        qsort(actions, actions_amount+1, sizeof(Action), compare_by_type);
+        for (int i = 0 ; i < actions_amount ; i++) {
+            printf("{%s:%d}",players[actions[i].player_id]->name, actions[i].action_type);
+        }
+    }
 
 }
 
@@ -154,6 +164,7 @@ int in_game(void) {
         }
         // 排序
         qsort(players[i]->tiles, 13, sizeof(Tile*), compare);
+        check_waited(players[i]);
     }
     // for (int i = 0 ; i < 10 ; i++) {
     //     printf("{%d,%d,%d}",dora[i]->suit,dora[i]->value,dora[i]->is_red);
@@ -173,7 +184,7 @@ int in_game(void) {
         for (int i = 0 ; i < 4 ; i++) {
             if (wall_now < 136) {
                 draw(wall, &wall_now, players[i]->tiles, &players[i]->tiles_amount);
-                in_turn(players[i]);
+                in_turn(players[i],players);
             }
             else {
                 goto out_of_tiles;

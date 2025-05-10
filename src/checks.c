@@ -7,14 +7,24 @@
 #include <stdio.h>
 #include <string.h>
 
-// int check_action(Player* player,Tile* discard) {
-//     if (0) {
-//         return 1;
-//     }
-//     {
-//         return 0;
-//     }
-// }
+int check_action(Player* players_list[],const Tile* discarded_tile,Action actions[], Player* curren_player) {
+    int action_index = 0;
+    for (int player_num = 0; player_num < 4; player_num++) {
+        if (players_list[player_num] == curren_player) {
+            continue;
+        }
+        for (int waited_tile_num = 0; waited_tile_num < players_list[player_num]->waited_tiles_amount; waited_tile_num++ ) {
+            if (if_equal(discarded_tile, &players_list[player_num]->waited_tiles[waited_tile_num].waited_tile, 0)) {
+                actions[action_index] = (Action) {.player_id = player_num,
+                    .action_type = players_list[player_num]->waited_tiles[waited_tile_num].type,
+                    .action_tile = &players_list[player_num]->waited_tiles[waited_tile_num].waited_tile};
+                action_index++;
+            }
+        }
+    }
+    return action_index;
+}
+
 void print_wait(const Player* player, const int i) {
     printf("[");
     print_tile(&player->waited_tiles[i].waited_tile);
@@ -88,14 +98,16 @@ void check_waited(Player* player) {
         // 检测碰杠
         skip_to_pg:
         if (if_equal(player->tiles[i], player->tiles[i+1], 0)) {
-            if (if_equal(player->tiles[i+1], player->tiles[i+2], 0)) {
-                player->waited_tiles[player->waited_tiles_amount] = (WaitedTile) {
-                    .waited_tile = *player->tiles[i],
-                    .type = wait_Gang
-                };
-                print_wait(player, player->waited_tiles_amount);
-                player->waited_tiles_amount++;
-                continue;
+            if (i+2 < player->tiles_amount) {
+                if (if_equal(player->tiles[i+1], player->tiles[i+2], 0)) {
+                    player->waited_tiles[player->waited_tiles_amount] = (WaitedTile) {
+                        .waited_tile = *player->tiles[i],
+                        .type = wait_Gang
+                    };
+                    print_wait(player, player->waited_tiles_amount);
+                    player->waited_tiles_amount++;
+                    continue;
+                }
             }
             player->waited_tiles[player->waited_tiles_amount] = (WaitedTile) {
                 .waited_tile = *player->tiles[i],

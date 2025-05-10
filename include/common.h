@@ -21,11 +21,12 @@ enum WordType {
     Zhong
 };
 
+// 优先级 胡>碰杠>吃
 typedef enum {
     wait_Hu,
-    wait_Chi,
     wait_Peng,
     wait_Gang,
+    wait_Chi,
 } Wait_type;
 
 typedef struct {
@@ -52,4 +53,10 @@ typedef struct {
     Tile* discarded[40];
     WaitedTile waited_tiles[10];
 } Player;
+
+typedef struct {
+    int player_id;
+    Wait_type action_type;
+    Tile* action_tile;
+} Action;
 #endif //COMMON_H
