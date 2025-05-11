@@ -34,11 +34,11 @@ void print_wait(const Player* player, const int i) {
 void rm_duplicated_waited_tile(WaitedTile tiles_list[], const int waited_tile, int* list_len) {
     for (int plus = 1; waited_tile+plus < *list_len; plus++) {
         if (if_equal(&tiles_list[waited_tile].waited_tile, &tiles_list[waited_tile + plus].waited_tile, 0) && tiles_list[waited_tile].type == tiles_list[waited_tile+plus].type) {
-            tiles_list[waited_tile].type = 0;
-            tiles_list[waited_tile].waited_tile.suit = 0;
-            tiles_list[waited_tile].waited_tile.value = 0;
-            for (int i = plus; waited_tile+i < *list_len ; i++) {
-                tiles_list[waited_tile+i-1] = tiles_list[waited_tile+i];
+            tiles_list[waited_tile + plus].type = 0;
+            tiles_list[waited_tile + plus].waited_tile.suit = 0;
+            tiles_list[waited_tile + plus].waited_tile.value = 0;
+            for (int i = plus; waited_tile+i+1 < *list_len ; i++) {
+                tiles_list[waited_tile+i] = tiles_list[waited_tile+i+1];
             }
             tiles_list[*list_len-1].type = 0;
             tiles_list[*list_len-1].waited_tile.suit = 0;
