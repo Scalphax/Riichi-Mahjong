@@ -51,7 +51,7 @@ typedef struct {
     int waited_tiles_amount;
     Tile* tiles[18];
     Tile* discarded[40];
-    WaitedTile waited_tiles[10];
+    WaitedTile waited_tiles[20];
 } Player;
 
 typedef struct {

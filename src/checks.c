@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int check_action(Player* players_list[],const Tile* discarded_tile,Action actions[], Player* curren_player) {
+int check_action(Player* players_list[],const Tile* discarded_tile,Action actions[], const Player* curren_player) {
     int action_index = 0;
     for (int player_num = 0; player_num < 4; player_num++) {
         if (players_list[player_num] == curren_player) {
@@ -31,11 +31,30 @@ void print_wait(const Player* player, const int i) {
     printf(", %d]",player->waited_tiles[i].type);
 }
 
-bool if_equal(const Tile* a, const Tile* b, const int diff) {
-    if (a->suit == b->suit && a->value == b->value - diff) {
-        return true;
+void rm_duplicated_waited_tile(WaitedTile tiles_list[], const int waited_tile, int* list_len) {
+    for (int plus = 1; waited_tile+plus < *list_len; plus++) {
+        if (if_equal(&tiles_list[waited_tile].waited_tile, &tiles_list[waited_tile + plus].waited_tile, 0) && tiles_list[waited_tile].type == tiles_list[waited_tile+plus].type) {
+            tiles_list[waited_tile].type = 0;
+            tiles_list[waited_tile].waited_tile.suit = 0;
+            tiles_list[waited_tile].waited_tile.value = 0;
+            for (int i = plus; waited_tile+i < *list_len ; i++) {
+                tiles_list[waited_tile+i-1] = tiles_list[waited_tile+i];
+            }
+            tiles_list[*list_len-1].type = 0;
+            tiles_list[*list_len-1].waited_tile.suit = 0;
+            tiles_list[*list_len-1].waited_tile.value = 0;
+            (*list_len)--;
+            break;
+        }
     }
-    return false;
+}
+
+bool if_empty (const WaitedTile* target_tile) {
+    return (target_tile->waited_tile.suit == 0 && target_tile->waited_tile.value == 0 );
+}
+
+bool if_equal(const Tile* a, const Tile* b, const int diff) {
+    return (a->suit == b->suit && a->value == b->value - diff);
 }
 
 // 等吃碰杠检测
@@ -64,7 +83,6 @@ void check_waited(Player* player) {
                             .is_red = false},
                             .type = wait_Chi
                         };
-                    print_wait(player, player->waited_tiles_amount);
                     player->waited_tiles_amount++;
                 }
                 if (player->tiles[i]->value < 8) {
@@ -75,7 +93,6 @@ void check_waited(Player* player) {
                             .is_red = false},
                             .type = wait_Chi
                     };
-                    print_wait(player, player->waited_tiles_amount);
                     player->waited_tiles_amount++;
                 }
             }
@@ -89,7 +106,6 @@ void check_waited(Player* player) {
                             .is_red = false},
                         .type = wait_Chi
                         };
-                    print_wait(player, player->waited_tiles_amount);
                     player->waited_tiles_amount++;
                     break;
                 }
@@ -104,7 +120,6 @@ void check_waited(Player* player) {
                         .waited_tile = *player->tiles[i],
                         .type = wait_Gang
                     };
-                    print_wait(player, player->waited_tiles_amount);
                     player->waited_tiles_amount++;
                     continue;
                 }
@@ -113,8 +128,52 @@ void check_waited(Player* player) {
                 .waited_tile = *player->tiles[i],
                 .type = wait_Peng
             };
-            print_wait(player, player->waited_tiles_amount);
             player->waited_tiles_amount++;
         }
     }
+    for (int current_tile = 0;current_tile < player->waited_tiles_amount; current_tile++) {
+        rm_duplicated_waited_tile(player->waited_tiles, current_tile, &player->waited_tiles_amount);
+    }
+    for (int i = 0; i < player->waited_tiles_amount; i++ ) {
+        print_wait(player, i);
+    }
 }
+
+       //非常复杂的前移 不用了
+//     // 前移
+//
+//     int current_tile = 0;
+//     while (1) {
+//         if (rm_count > 0) {
+//             if (if_empty(&player->waited_tiles[current_tile])) {
+//                 int plus = 1;
+//                 while (1) {
+//                     if (if_empty(&player->waited_tiles[current_tile+plus])) {
+//                         plus++;
+//                     }
+//                     {
+//                         player->waited_tiles[current_tile] = player -> waited_tiles[current_tile+plus];
+//                         int i = 0;
+//                         while (1) {
+//                             if (!if_empty(&player->waited_tiles[current_tile+plus+1])) {
+//
+//                             }
+//                             else {
+//                                 break;
+//                             }
+//                         }
+//                         rm_count--;
+//                         current_tile++;
+//                         break;
+//                     }
+//                 }
+//             }
+//             else {
+//                 current_tile++;
+//             }
+//         }
+//         else {
+//             break;
+//         }
+//     }
+// }

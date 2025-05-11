@@ -129,7 +129,8 @@ void in_turn(Player* player, Player* players[]) {
     Action actions[8] = {0};
     int const actions_amount = check_action(players, player->discarded[player->discard_amount-1], actions, player);
     if (actions_amount > 0) {
-        qsort(actions, actions_amount+1, sizeof(Action), compare_by_type);
+        qsort(actions, actions_amount, sizeof(Action), compare_by_type);
+        printf("\n");
         for (int i = 0 ; i < actions_amount ; i++) {
             printf("{%s:%d}",players[actions[i].player_id]->name, actions[i].action_type);
         }
