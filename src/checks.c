@@ -2,7 +2,6 @@
 // Created by Scalphax on 25-5-8.
 //
 #include "../include/checks.h"
-#include "../include/game.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

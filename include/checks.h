@@ -5,6 +5,7 @@
 #ifndef CHECKS_H
 #define CHECKS_H
 #include "common.h"
+#include "game.h"
 #endif //CHECKS_H
 
 //int check_action(Player* player,Tile* discard);

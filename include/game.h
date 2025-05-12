@@ -13,5 +13,6 @@ void shuffle(Tile wall[136]);
 void draw(Tile* wall, int* wall_now,Tile* tiles[],int* tiles_amount);
 void in_turn(Player* player, Player* players[]);
 int in_game(void);
+int compare(const void* a, const void* b);
 
 #endif //GAME_H

@@ -10,4 +10,6 @@ add_executable(mah_jong src/main.c
         include/common.h
         src/common.c
         include/game.h
+        src/ting_check.c
+        include/ting_check.h
 )
