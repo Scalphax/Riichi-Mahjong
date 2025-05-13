@@ -131,10 +131,13 @@ void in_turn(Player* player, Player* players[]) {
         qsort(actions, actions_amount, sizeof(Action), compare_by_type);
         printf("\n");
         for (int i = 0 ; i < actions_amount ; i++) {
-            printf("{%s:%d}",players[actions[i].player_id]->name, actions[i].action_type);
+            //todo 副露部分
+            int input = scanf("%d");
+            if (input == 1) {
+
+            }
         }
     }
-
 }
 
 int in_game(void) {

@@ -48,8 +48,12 @@ void rm_duplicated_waited_tile(WaitedTile tiles_list[], const int waited_tile, i
     }
 }
 
+bool if_tile_empty (const Tile* target_tile) {
+    return (target_tile->suit == 0 && target_tile->value == 0 );
+}
+
 bool if_empty (const WaitedTile* target_tile) {
-    return (target_tile->waited_tile.suit == 0 && target_tile->waited_tile.value == 0 );
+    return (if_tile_empty(&target_tile->waited_tile));
 }
 
 bool if_equal(const Tile* a, const Tile* b, const int diff) {

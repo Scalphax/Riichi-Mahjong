@@ -6,5 +6,6 @@
 #define TING_CHECK_H
 #include "common.h"
 #include "game.h"
+#include "checks.h"
 
 #endif //TING_CHECK_H

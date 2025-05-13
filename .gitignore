@@ -1,6 +1,7 @@
 /cmake-build-debug/
 /cmake-build-release/
 /build/
+/.idea/
 
 # 排除其他生成文件
 *.o
